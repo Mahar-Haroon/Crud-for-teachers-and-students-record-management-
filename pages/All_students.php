@@ -1,5 +1,4 @@
 <?php
-
 include '../config/env_school.php';
 if (empty($_SESSION)) {
     header("Location: Sign_in.php");
@@ -8,7 +7,6 @@ if (empty($_SESSION)) {
 // Fetch all students and teachers
 $students = $conn->query("SELECT * FROM students")->fetchAll();
 $teachers = $conn->query("SELECT * FROM teachers")->fetchAll();
-
 // Get students with their teacher details (now includes teacher_id)
 $stmt = $conn->prepare("
     SELECT 
@@ -42,25 +40,18 @@ if (isset($_SESSION['error'])) {
     unset($_SESSION['error']);
 }
 ?>
-
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Student & Teacher Filters</title>
-
 </head>
-
 <body class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed aside-enabled aside-fixed">
     <?php include 'include/header.php';
     include 'include/nav.php';
     include 'include/sidebar.php';
-
     ?>
-
 <div class="d-flex flex-column flex-root">
-    <div class="page d-flex flex-row flex-column-fluid">
-      
+    <div class="page d-flex flex-row flex-column-fluid">    
     <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
         <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
             <div class="post d-flex flex-column-fluid" id="kt_post">
@@ -104,7 +95,6 @@ if (isset($_SESSION['error'])) {
                         data-subject="<?= htmlspecialchars($row['teacher_subject']); ?>"
                     >
                     <img src="imgs/update.png" style="width:20px;">
-
                     </button>
                 </td>
             </tr>
@@ -112,7 +102,6 @@ if (isset($_SESSION['error'])) {
         </tbody>
     </table>
 </div>
-
 <!-- Feedback Modal -->
 <div class="modal fade" id="feedbackModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -124,7 +113,6 @@ if (isset($_SESSION['error'])) {
         </div>
     </div>
 </div>
-
 <!-- Error Modal -->
 <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -139,7 +127,6 @@ if (isset($_SESSION['error'])) {
         </div>
     </div>
 </div>
-
 <!-- Update Modal -->
 <div class="modal fade" id="updateModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -184,20 +171,16 @@ if (isset($_SESSION['error'])) {
         </div>
     </div>
 </div>
-
 <!-- Bootstrap Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     <?php if ($showModal): ?>
     new bootstrap.Modal(document.getElementById('feedbackModal')).show();
     <?php endif; ?>
-
     <?php if ($showErrorModal): ?>
     new bootstrap.Modal(document.getElementById('errorModal')).show();
     <?php endif; ?>
-
     document.querySelectorAll('.update-btn').forEach(button => {
         button.addEventListener('click', function () {
             document.getElementById('update_id').value = this.dataset.id;
@@ -210,33 +193,18 @@ document.addEventListener("DOMContentLoaded", function () {
             [...teacherSelect.options].forEach(option => {
                 option.selected = option.value === this.dataset.teacher;
             });
-
             new bootstrap.Modal(document.getElementById('updateModal')).show();
         });
     });
 });
 </script>
-            
-
             </div>
         </div>
         <?php
         include 'include/footer.php';
-
-
-
         ?>
+    </div>    
     </div>
-    
-    </div>
-
-</div>
-
-
-
-
-
-    
+</div> 
 </body>
-
 </html>
