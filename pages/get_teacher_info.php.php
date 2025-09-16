@@ -1,14 +1,11 @@
 <?php
 include '../config/env_school.php';
-
 if (isset($_POST['teacher_id'])) {
     $teacher_id = $_POST['teacher_id'];
-
     $stmt = $conn->prepare("SELECT * FROM teachers WHERE id = :id");
     $stmt->bindParam(':id', $teacher_id);
     $stmt->execute();
     $teacher = $stmt->fetch(PDO::FETCH_ASSOC);
-
     echo json_encode($teacher);
 }
 ?>
@@ -26,25 +23,20 @@ if (isset($_POST['teacher_id'])) {
         <?php endforeach; ?>
     </select>
 </div>
-
 <!-- Autofilled Fields -->
 <div class="mb-4">
     <input type="text" name="teacher_name" id="teacher_name" class="form-control" placeholder="Teacher Name" value="<?= $fname ?>">
     <span class="text-danger"><?= $fnameErr ?></span>
 </div>
-
 <div class="mb-4">
     <input type="text" name="teacher_subject" id="teacher_subject" class="form-control" placeholder="Teacher Subject" value="<?= $password ?>">
     <span class="text-danger"><?= $passwordErr ?></span>
 </div>
-
 <!-- .................................................................... -->
-
 <script>
 $(document).ready(function () {
     $('#teacherSelect').on('change', function () {
         var teacherId = $(this).val();
-
         if (teacherId !== "") {
             $.ajax({
                 url: 'fetch_teacher_data.php',
@@ -64,8 +56,6 @@ $(document).ready(function () {
     });
 });
 </script>
-
-
 <!-- .................backend code submission code................................................... -->
 <!-- Teacher select dropdown -->
 <select class="form-control" name="id">
@@ -74,13 +64,11 @@ $(document).ready(function () {
         <option value="<?= $teacher['id'] ?>"><?= $teacher['teacher_name'] ?></option>
     <?php endforeach; ?>
 </select>
-
 <!-- Auto-populated fields -->
 <div class="mb-4">
     <label>Subject</label>
     <input type="text" id="teacher_subject" class="form-control" readonly>
 </div>
-
 <div class="mb-4">
     <label>Age</label>
     <input type="text" id="teacher_age" class="form-control" readonly>
