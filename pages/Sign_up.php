@@ -1,9 +1,7 @@
 <?php
 include 'include/header.php';
-
 $username = "root";
 $password = "root";
-
 // Initialize field-specific errors
 $errors = [
     'name' => '',
@@ -13,7 +11,6 @@ $errors = [
     'toc' => ''
 ];
 $success = "";
-
 try {
     $conn = new PDO("mysql:host=localhost;dbname=school", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -25,15 +22,12 @@ try {
         $password = trim($_POST['password'] ?? '');
         $confirmPassword = trim($_POST['confirm-password'] ?? '');
         $toc = $_POST['toc'] ?? '';
-
         $hasError = false;
-
         // Validate name
         if (empty($name)) {
             $errors['name'] = "Name is required.";
             $hasError = true;
         }
-
         // Validate email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = "Invalid email format.";
@@ -47,25 +41,21 @@ try {
                 $hasError = true;
             }
         }
-
         // Validate password
         if (strlen($password) < 6) {
             $errors['password'] = "Password must be at least 6 characters.";
             $hasError = true;
         }
-
         // Confirm password
         if ($password !== $confirmPassword) {
             $errors['confirm_password'] = "Passwords do not match.";
             $hasError = true;
         }
-
         // Terms & conditions
         if (empty($toc)) {
             $errors['toc'] = "You must agree to the Terms and Conditions.";
             $hasError = true;
         }
-
         if (!$hasError) {
             $Password = password_hash($password, PASSWORD_DEFAULT);
             $sql = "INSERT INTO students (teacher_id, student_name, student_email, Password) 
@@ -75,7 +65,6 @@ try {
             $stmt->bindParam(':name', $name);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':password', $Password);
-
             if ($stmt->execute()) {
                 $success = "User registered successfully!";
                 $_POST = []; // Clear the form
@@ -88,7 +77,6 @@ try {
     $errors['name'] = "Connection failed: " . $e->getMessage();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -108,9 +96,7 @@ try {
         <a href="#" class="mb-12">
             <img alt="Logo" src="assets/media/logos/logo-1.svg" class="h-40px">
         </a>
-
         <div class="w-lg-600px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
-
             <?php if (!empty($success)): ?>
                 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                 <script>
@@ -130,7 +116,6 @@ try {
                     });
                 </script>
             <?php endif; ?>
-
             <form class="form w-100" action="<?= htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="kt_sign_up_form" novalidate>
                 <div class="mb-10 text-center">
                     <h1 class="text-dark mb-3">Create an Account</h1>
@@ -138,9 +123,7 @@ try {
                         <a href="Sign_in.php" class="link-primary fw-bolder">Sign in here</a>
                     </div>
                 </div>
-
                 <input type="hidden" name="teacher_id" value="1">
-
                 <!-- Name -->
                 <div class="mb-7">
                     <label class="form-label fw-bolder text-dark fs-6">Name</label>
@@ -149,7 +132,6 @@ try {
                         <div class="text-danger"><?= htmlspecialchars($errors['name']) ?></div>
                     <?php endif; ?>
                 </div>
-
                 <!-- Email -->
                 <div class="mb-7">
                     <label class="form-label fw-bolder text-dark fs-6">Email</label>
@@ -158,7 +140,6 @@ try {
                         <div class="text-danger"><?= htmlspecialchars($errors['email']) ?></div>
                     <?php endif; ?>
                 </div>
-
                 <!-- Password -->
                 <div class="mb-7">
                     <label class="form-label fw-bolder text-dark fs-6">Password</label>
@@ -167,7 +148,6 @@ try {
                         <div class="text-danger"><?= htmlspecialchars($errors['password']) ?></div>
                     <?php endif; ?>
                 </div>
-
                 <!-- Confirm Password -->
                 <div class="mb-7">
                     <label class="form-label fw-bolder text-dark fs-6">Confirm Password</label>
@@ -176,7 +156,6 @@ try {
                         <div class="text-danger"><?= htmlspecialchars($errors['confirm_password']) ?></div>
                     <?php endif; ?>
                 </div>
-
                 <!-- Terms -->
                 <div class="mb-10">
                     <label class="form-check form-check-custom form-check-solid">
@@ -190,7 +169,6 @@ try {
                         <div class="text-danger"><?= htmlspecialchars($errors['toc']) ?></div>
                     <?php endif; ?>
                 </div>
-
                 <!-- Submit -->
                 <div class="text-center">
                     <button type="submit" name="submit" class="btn btn-lg btn-primary">
@@ -204,7 +182,6 @@ try {
         </div>
     </div>
 </div>
-
 <script src="assets/plugins/global/plugins.bundle.js"></script>
 <script src="assets/js/scripts.bundle.js"></script>
 </body>
