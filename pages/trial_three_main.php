@@ -1,23 +1,16 @@
 
-
 <?php
 include '../config/env_school.php';
-
-
 if (empty($_SESSION)) {
     header("Location: Sign_in.php");
     exit();
 }
-
 $nameErr = $emailErr = $ageErr = $teacherErr = $subjectErr = "";
 $student_name = $student_email = $student_age = $teacher_id = $teacher_subject = "";
-
 $modalOpen = false; // Flag to control modal visibility
-
 // Handle insert from modal
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
     $isValid = true;
-
     // Student Name
     if (empty($_POST["student_name"])) {
         $nameErr = "Student name is required.";
@@ -25,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
     } else {
         $student_name = trim($_POST["student_name"]);
     }
-
     // Student Email
     if (empty($_POST["student_email"])) {
         $emailErr = "Email is required.";
@@ -45,7 +37,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
             }
         }
     }
-
     // Student Age
     if (empty($_POST["student_age"])) {
         $ageErr = "Age is required.";
@@ -57,7 +48,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
             $isValid = false;
         }
     }
-
     // Teacher ID
     if (empty($_POST["teacher_id"])) {
         $teacherErr = "Teacher selection is required.";
@@ -65,7 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
     } else {
         $teacher_id = $_POST["teacher_id"];
     }
-
     // Subject
     if (empty($_POST["teacher_subject"])) {
         $subjectErr = "Subject selection is required.";
@@ -73,7 +62,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
     } else {
         $teacher_subject = $_POST["teacher_subject"];
     }
-
     // Insert only if valid
     if ($isValid) {
         $sql = "INSERT INTO students (teacher_id, student_name, student_email, teacher_subject, student_age) 
@@ -84,7 +72,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
         $stmt->bindParam(':student_email', $student_email);
         $stmt->bindParam(':teacher_subject', $teacher_subject);
         $stmt->bindParam(':student_age', $student_age);
-
         if ($stmt->execute()) {
             echo "<div class='alert alert-success mt-3'>Student data inserted successfully.</div>";
             echo "<script>var studentInserted = true;</script>";
@@ -94,20 +81,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_data"])) {
         }
     } else {
         $modalOpen = true;
-    }
-    
+    }  
 }
-
 // Fetch dropdown data
 $teachers = $conn->query("SELECT DISTINCT teacher_id, teacher_name FROM teachers")->fetchAll();
 $subjects = $conn->query("SELECT DISTINCT teacher_subject FROM teachers")->fetchAll();
 $student_names = $conn->query("SELECT DISTINCT student_name,student_email FROM students")->fetchAll();
 $student_ages = $conn->query("SELECT DISTINCT student_age,student_email FROM students ORDER BY student_age ASC")->fetchAll();
-
 // Filters
 $filter_result = $filter_result_2 = $filter_result_3 = [];
 $filter_type = '';
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['filter_teacher'])) {
         $teacher_id = $_POST['teacher_id'];
@@ -121,7 +104,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $filter_result = $stmt->fetchAll();
         $filter_type = 'Teacher';
     }
-
     if (isset($_POST['filter_subject'])) {
         $teacher_subject = $_POST['teacher_subject'];
         $stmt = $conn->prepare("
@@ -134,7 +116,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $filter_result_2 = $stmt->fetchAll();
         $filter_type = 'Subject';
     }
-
     if (isset($_POST['filter_age'])) {
         $student_age = $_POST['student_age'];
         $stmt = $conn->prepare("
@@ -148,39 +129,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-
-
-
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>Student & Teacher Filters</title>
-
 </head>
-
 <body class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed aside-enabled aside-fixed">
     <?php include 'include/header.php';
     include 'include/nav.php';
     include 'include/sidebar.php';
-
     ?>
-
 <div class="d-flex flex-column flex-root">
-    <div class="page d-flex flex-row flex-column-fluid">
-      
+    <div class="page d-flex flex-row flex-column-fluid">     
     <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
         <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
             <div class="post d-flex flex-column-fluid" id="kt_post">
-
             <div class="container mt-5">
         <h3 class="mb-4 mt-4">Filter Students</h3>
-
-
-
-
-
-
         <!-- Filter by Teacher -->
         <form method="post" class="mb-3">
             <label>Teacher Name:</label>
@@ -194,7 +159,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button name="filter_teacher" class="btn btn-success">Confirm</button>
             </div>
         </form>
-
         <!-- Filter by Subject -->
         <form method="post" class="mb-3">
             <label>Subject:</label>
@@ -208,17 +172,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button name="filter_subject" class="btn btn-success">Confirm</button>
             </div>
         </form>
-
         <!-- Filter by Age -->
         <?php
         // Extract just the age values
         $ages_only = array_column($student_ages, 'student_age');
-
         // Remove duplicates
         $unique_ages = array_unique($ages_only);
-
         ?>
-
         <form method="post" class="mb-3">
             <label>Student Age:</label>
             <div class="input-group" style="width:95%;">
@@ -231,8 +191,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button name="filter_age" class="btn btn-success">Confirm</button>
             </div>
         </form>
-
-
         <!-- Filter by Student Name -->
         <form method="post" action="students_formdata.php" class="mb-3">
             <label>Student Name:</label>
@@ -245,9 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </select>
                 <input type="submit" value="Submit" name="filter_student_name" class="btn btn-success">
             </div>
-        </form>
-
-     
+        </form>     
         <!-- Filter Results -->
         <?php if (!empty($filter_result)): ?>
             <h4 class="mt-4">Results for <?= $filter_type ?> Filter</h4>
@@ -270,7 +226,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </tbody>
             </table>
         <?php endif; ?>
-
         <?php if (!empty($filter_result_2)): ?>
             <h4 class="mt-4">Results for <?= $filter_type ?> Filter</h4>
             <table class="table table-bordered text-center mt-3">
@@ -290,7 +245,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </tbody>
             </table>
         <?php endif; ?>
-
         <?php if (!empty($filter_result_3)): ?>
             <h4 class="mt-4">Results for <?= $filter_type ?> Filter</h4>
             <table class="table table-bordered text-center mt-3">
@@ -308,15 +262,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </tbody>
             </table>
         <?php endif; ?>
-
         <!-- Button to Trigger Modal -->
         <div class="container mt-5">
             <h3>Add New Student</h3>
-
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 Add Student
             </button>
-
             <!-- Modal -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -375,7 +326,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
-
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         <?php if ($modalOpen): ?>
@@ -392,30 +342,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     });
 </script>
         </div>
-        
-
     </div>
-    
-
-            </div>
-            
+            </div>            
         </div>
         <?php
         include 'include/footer.php';
-
-
-
         ?>
     </div>
     </div>
-
-</div>
-
-
-
-
-
-    
+</div>    
 </body>
-
 </html>
