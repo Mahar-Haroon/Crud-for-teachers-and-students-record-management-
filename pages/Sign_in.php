@@ -2,7 +2,6 @@
 include '../config/env_school.php';
 include 'include/header.php';
 session_start();
-
 $email = '';
 $password = '';
 $errors = [
@@ -10,39 +9,32 @@ $errors = [
     'password' => '',
     'login' => ''
 ];
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
-
     // Validate email
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = "Please enter a valid email address.";
     }
-
     // Validate password
     if (empty($password) || strlen($password) < 6) {
         $errors['password'] = "Password must be at least 6 characters.";
     }
-
     if (empty($errors['email']) && empty($errors['password'])) {
         try {
             $conn = new PDO("mysql:host=localhost;dbname=school", "root", "root");
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
             // Fetch user by email
             $sql = "SELECT * FROM students WHERE student_email = :email";
             $stmt = $conn->prepare($sql);
             $stmt->bindParam(':email', $email);
             $stmt->execute();
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
             // Verify password
             if ($user && password_verify($password, $user['Password'])) {
                 $_SESSION['user_id'] = $user['student_id'];
                 $_SESSION['email'] = $user['student_email'];
                 $_SESSION['name'] = $user['student_name'];
-
                 header("Location: trial_three_main.php");
                 exit();
             } else {
@@ -54,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,7 +66,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <a href="#" class="mb-12">
                 <img alt="Logo" src="assets/media/logos/logo-1.svg" class="h-40px">
             </a>
-
             <div class="w-lg-500px bg-body rounded shadow-sm p-10 p-lg-15 mx-auto">
                 <form class="form w-100" method="post" novalidate>
                     <div class="text-center mb-10">
@@ -84,11 +74,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <a href="Sign_up.php" class="link-primary fw-bolder">Create an Account</a>
                         </div>
                     </div>
-
                     <?php if (!empty($errors['login'])): ?>
                         <div class="alert alert-danger"><?= htmlspecialchars($errors['login']) ?></div>
                     <?php endif; ?>
-
                     <!-- Email -->
                     <div class="fv-row mb-10">
                         <label class="form-label fs-6 fw-bolder text-dark">Email</label>
@@ -97,7 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <div class="text-danger"><?= htmlspecialchars($errors['email']) ?></div>
                         <?php endif; ?>
                     </div>
-
                     <!-- Password -->
                     <div class="fv-row mb-10">
                         <div class="d-flex flex-stack mb-2">
@@ -109,15 +96,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             <div class="text-danger"><?= htmlspecialchars($errors['password']) ?></div>
                         <?php endif; ?>
                     </div>
-
                     <!-- Submit -->
                     <div class="text-center">
                         <button type="submit" class="btn btn-lg btn-primary w-100 mb-5">
                             <span class="indicator-label">Continue</span>
                         </button>
-
                         <div class="text-center text-muted text-uppercase fw-bolder mb-5">or</div>
-
                         <a href="#" class="btn btn-flex flex-center btn-light btn-lg w-100 mb-5">
                             <img alt="Logo" src="assets/media/svg/brand-logos/google-icon.svg" class="h-20px me-3">Continue with Google
                         </a>
@@ -131,7 +115,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </form>
             </div>
         </div>
-
         <!-- Footer -->
         <div class="d-flex flex-center flex-column-auto p-10">
             <div class="d-flex align-items-center fw-bold fs-6">
@@ -142,7 +125,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </div>
     </div>
 </div>
-
 <script src="assets/plugins/global/plugins.bundle.js"></script>
 <script src="assets/js/scripts.bundle.js"></script>
 </body>
