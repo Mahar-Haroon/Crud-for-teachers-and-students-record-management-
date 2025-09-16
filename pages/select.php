@@ -1,57 +1,36 @@
 <?php
 include '../config/env_school.php';
-
 $users = $conn->query("SELECT teachers.teacher_id, teachers.teacher_name, students.student_name, teachers.teacher_subject, students.student_age
 FROM teachers
 INNER JOIN students ON teachers.teacher_id = students.teacher_id;")->fetchAll();
-
-
 echo $user["teacher_name"];
-
-
 echo "<table border='1' style='border-collapse:collapse;margin:auto;text-align:center;width:70%;'>";
-
 echo "<tr>";
-
 echo  "<th>Teacher ID</th>";
 echo  "<th>Teacher Name</th>";
 echo  "<th>Student Name</th>";
 echo  "<th>Teacher Subject</th>";
 echo  "<th>Student Age</th>";
-
 echo "</tr>";
-
-
 foreach($users as $user) {
 echo "<tr>";
-
 echo  "<td>" .$user["teacher_id"]  .  "</td>";
 echo  "<td>" .$user["teacher_name"]  .  "</td>";
 echo  "<td>" .$user["student_name"] .  "</td>";
 echo  "<td>" .$user["teacher_subject"]   ."</td>";
 echo  "<td>" .$user["student_age"] .  "</td>";
-
-
-
-
  echo "</tr>";
 }
-
 echo "</table>";
 ?>
-
 <?php
-
 // Handle form submission
 $teachers = $conn->query("SELECT * from teachers")->fetchAll();
-
 if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
-
     $target_dir = "../Controls/uploads/";
     $target_file = $target_dir . basename($_FILES["image"]["name"]);
     $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
     // Validate image
     if (isset($_FILES["image"]) && $_FILES["image"]["error"] === 0) {
         $check = getimagesize($_FILES["image"]["tmp_name"]);
@@ -69,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
         $imageErr3 = "Image file is required.";
         $uploadOk = 0;
     }
-
     // Validate input fields
     if (empty($_POST["first_name"])) {
         $fnameErr = "First name is required.";
@@ -79,13 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
             $fnameErr = "Only letters and white space allowed.";
         }
     }
-
     if (empty($_POST["last_name"])) {
         $lnameErr = "Last name is required.";
     } else {
         $lname = test_input($_POST["last_name"]);
     }
-
     if (empty($_POST["email"])) {
         $emailErr = "Email is required.";
     } else {
@@ -94,35 +70,26 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
             $emailErr = "Invalid email format.";
         }
     }
-
     if (isset($_POST["subject"])) {
         $subject = implode(',', $_POST["subject"]);
     } else {
         $subjectErr = "At least one subject is required.";
     }
-
     if (empty($_POST["password"])) {
         $passwordErr = "Password is required.";
     } else {
         $password = test_input($_POST["password"]);
     }
-
-
-
     $all_data = !empty($fname) && !empty($lname) && !empty($email) && !empty($password) && !empty($subject);
-    
     // If no validation errors and upload is successful
     if ($all_data && $uploadOk == 1 && $_FILES["image"]["error"] === 0) {
-        // Open the image file in binary mode
         $imageData = file_get_contents($_FILES['image']['tmp_name']);
         $imageName = $_FILES["image"]["name"];
-        // Prepare database connection
         try {
-            // Prepare the SQL query
+            //  the SQL query
             $sql = "INSERT INTO sign_up (Profile, first_name, last_name, email, password, subject) 
                     VALUES (:image_name, :first_name, :last_name, :email, :password, :subject)";
             $stmt = $conn->prepare($sql);
-
             // Bind parameters
             $stmt->bindParam(':first_name', $fname);
             $stmt->bindParam(':last_name', $lname);
@@ -130,10 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
             $stmt->bindParam(':password', $password);
             $stmt->bindParam(':image_name', $_FILES["image"]["name"]);
             $stmt->bindParam(':subject', $subject);
-
-            // Execute the query
             $stmt->execute();
-
             // If file upload is successful
             if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
                 $success_message=  "The file ". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " has been uploaded.";
@@ -144,25 +108,20 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && isset($_POST['submit'])) {
             $error_of_all = "Error: " . $e->getMessage();
         }
     } else {
-        // If any error exists, handle global errors.
         if (!$all_data) {
             $error_of_all = "Please fill in all required fields correctly.";
         }
     }
 }
-
-// Function to sanitize user inputs
 function test_input($data) {
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return $data;
 }
-
 $er_al = !empty($error_of_all) . !empty($imageErr1) . !empty($imageErr2) . !empty($imageErr3);
 $su_al = $success_message . $success_message
 ?>
-
 <?php if (!empty($su_al)): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?php echo $signupSuccess . "<br>" . $success_message; ?>
@@ -171,9 +130,6 @@ $su_al = $success_message . $success_message
             </button>
         </div>
     <?php endif; ?>
-
-
-
     <?php if (!empty($er_al)): ?>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <?php echo $error_of_all . $imageErr1 . $imageErr2 . $imageErr3; ?>
@@ -182,7 +138,6 @@ $su_al = $success_message . $success_message
             </button>
         </div>
     <?php endif; ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -202,59 +157,44 @@ $su_al = $success_message . $success_message
                             <div class="row justify-content-center">
                                 <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                                     <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-
                                     <!-- Form starts here -->
                                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" class="mx-1 mx-md-4" enctype="multipart/form-data">
-                                        <input type="file" name="image" accept=".jpg,.png,.jpeg" id="image" class="mb-4">
-                                       
-                                        
+                                        <input type="file" name="image" accept=".jpg,.png,.jpeg" id="image" class="mb-4">                                                                        
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <div class="form-outline flex-fill mb-0">
-                                                <input type="text" name="first_name" class="form-control" value="<?php echo $fname;?>"/>
-                                                
+                                                <input type="text" name="first_name" class="form-control" value="<?php echo $fname;?>"/>                                             
                                                 <label class="form-label">First Name</label><br>
                                                 <span class="error text-danger">* <?php echo $fnameErr;?></span>
                                             </div>
                                         </div>
-
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <div class="form-outline flex-fill mb-0">
                                                 <input type="text" name="last_name" class="form-control" value="<?php echo $lname;?>"/>
-
                                                 <label class="form-label">Last Name</label><br>
                                                 <span class="error text-danger">* <?php echo $lnameErr;?></span>
                                             </div>
                                         </div>
-
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <div class="form-outline flex-fill mb-0">
                                                 <input type="email" name="email" class="form-control" value="<?php echo $email;?>"/>
-
                                                 <label class="form-label">Email</label><br>
                                                 <span class="error text-danger">* <?php echo $emailErr;?></span>
                                             </div>
                                         </div>
-
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <div class="form-outline flex-fill mb-0">
-                                                <input type="password" name="password" class="form-control"/>
-                                                
+                                                <input type="password" name="password" class="form-control"/>                                                
                                                 <label class="form-label">Password</label><br>
-                                                <span class="error text-danger">* <?php echo $passwordErr;?></span>
-                                                
+                                                <span class="error text-danger">* <?php echo $passwordErr;?></span>                                               
                                             </div>
                                         </div>
                                         <select class="form-control" name="id">
                                             <?php
                                             foreach($teachers as $teacher){?>
 <option value="<?=$teacher['id']?>"><?=$teacher['teacher_name']?></option>
-<?php   }
-                                            
-                                            
-                                            ?>
-                                            
+<?php   }                                                                                       
+                                            ?>                                            
                                         </select>
-
                                         <div class="form-check d-flex justify-content-center mb-5" style="margin-left: 240px;">
                                             <label><h5>Subjects:</h5></label>
                                             <input class="form-check-input me-2 mx-3" type="checkbox" name="subject[]" value="math" <?php if (strpos($subject, 'math') !== false) echo 'checked'; ?> />
@@ -270,12 +210,10 @@ $su_al = $success_message . $success_message
                                             <input class="form-check-input me-2 mx-3" style="z-index:111111;" type="checkbox" name="subject[]" value="Physics" <?php if (strpos($subject, 'Physics') !== false) echo 'checked'; ?> />
                                             <label>Physics</label>
                                         </div>
-
                                         <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                                             <input type="submit" class="btn btn-primary btn-lg" name="submit" value="REGISTER">
                                         </div>
                                     </form>
-
                                     <!-- End of form -->
                                 </div>
                                 <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
@@ -288,8 +226,6 @@ $su_al = $success_message . $success_message
             </div>
         </div>
     </section>
-
-    <!-- Display success or error message -->
-   
+    <!-- Display success or error message --> 
 </body>
 </html>
